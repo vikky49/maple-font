@@ -8,7 +8,7 @@
     "cv01": "enable",
     "cv02": "ignore",
     "cv03": "ignore",
-    "cv04": "ignore",
+    "cv04": "enable",
     "cv05": "ignore",
     "cv06": "enable",
     "cv07": "ignore",
