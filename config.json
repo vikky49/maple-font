@@ -17,7 +17,7 @@
     "cv32": "ignore",
     "cv33": "ignore",
     "cv34": "enable",
-    "cv35": "enable",
+    "cv35": "ignore",
     "cv36": "enable",
     "cv37": "enable",
     "cv38": "ignore",
