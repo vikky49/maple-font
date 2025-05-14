@@ -14,7 +14,7 @@
     "cv08": "ignore",
     "cv31": "ignore",
     "cv32": "ignore",
-    "cv33": "ignore",
+    "cv33": "enable",
     "cv34": "enable",
     "cv35": "enable",
     "cv36": "ignore",
@@ -44,7 +44,7 @@
     "zero": "ignore"
   },
   "nerd_font": {
-    "enable": false,
+    "enable": true,
     "version": "3.4.0",
     "mono": false,
     "use_font_patcher": false,
