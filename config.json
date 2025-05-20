@@ -8,12 +8,12 @@
     "cv02": "enable",
     "cv03": "ignore",
     "cv04": "ignore",
-    "cv05": "enable",
+    "cv05": "ignore",
     "cv06": "enable",
     "cv07": "ignore",
-    "cv08": "ignore",
+    "cv08": "enable",
     "cv31": "ignore",
-    "cv32": "enable",
+    "cv32": "ignore",
     "cv33": "ignore",
     "cv34": "enable",
     "cv35": "enable",
@@ -22,7 +22,7 @@
     "cv38": "ignore",
     "cv39": "ignore",
     "cv40": "ignore",
-    "cv41": "ignore",
+    "cv41": "enable",
     "cv61": "enable",
     "cv62": "enable",
     "cv63": "ignore",
@@ -41,7 +41,7 @@
     "ss09": "enable",
     "ss10": "enable",
     "ss11": "enable",
-    "zero": "enable"
+    "zero": "ignore"
   },
   "nerd_font": {
     "enable": false,
