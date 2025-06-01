@@ -12,7 +12,7 @@
     "cv06": "ignore",
     "cv07": "ignore",
     "cv08": "ignore",
-    "cv31": "enable",
+    "cv31": "ignore",
     "cv32": "enable",
     "cv33": "enable",
     "cv34": "enable",
@@ -26,6 +26,8 @@
     "cv61": "enable",
     "cv62": "enable",
     "cv63": "ignore",
+    "cv64": "enable",
+    "cv65": "enable",
     "cv96": "ignore",
     "cv97": "ignore",
     "cv98": "ignore",
@@ -36,15 +38,15 @@
     "ss04": "enable",
     "ss05": "ignore",
     "ss06": "enable",
-    "ss07": "ignore",
+    "ss07": "enable",
     "ss08": "enable",
     "ss09": "enable",
     "ss10": "enable",
     "ss11": "enable",
-    "zero": "enable"
+    "zero": "ignore"
   },
   "nerd_font": {
-    "enable": true,
+    "enable": false,
     "version": "3.4.0",
     "mono": false,
     "use_font_patcher": false,
@@ -61,6 +63,6 @@
     "narrow": false,
     "use_hinted": false,
     "use_static_base_font": true,
-    "scale_factor": 1
+    "scale_factor": 1.0
   }
 }
