@@ -20,7 +20,7 @@
     "cv36": "enable",
     "cv37": "enable",
     "cv38": "enable",
-    "cv39": "enable",
+    "cv39": "ignore",
     "cv40": "ignore",
     "cv41": "ignore",
     "cv61": "enable",
