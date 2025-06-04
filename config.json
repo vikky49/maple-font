@@ -35,7 +35,7 @@
     "ss01": "ignore",
     "ss02": "ignore",
     "ss03": "enable",
-    "ss04": "ignore",
+    "ss04": "enable",
     "ss05": "ignore",
     "ss06": "enable",
     "ss07": "enable",
