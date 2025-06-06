@@ -1,6 +1,7 @@
 from source.py.feature import ast
 from source.py.feature.base.clazz import cls_digit, cls_question
 from source.py.feature.calt._infinite_utils import (
+    ignore_when_not_using_infinite,
     use_infinite,
     ignore_when_using_infinite,
     infinite_rules,
@@ -109,6 +110,17 @@ def get_lookup():
                 ),
             ],
         ),
+        ignore_when_not_using_infinite(
+            ast.subst_liga(
+                "--",
+                lookup_name=ast.gly("--", "__ALT__"),
+                desc=">--</",
+                surround=[
+                    (">", [ast.SPC, ast.gly("</")]),
+                    (">", ["<", "/"]),
+                ],
+            )
+        ),
         ast.subst_liga(
             "---",
             ign_prefix=ast.cls("<", ">", "-", "|", ast.SPC),
@@ -116,6 +128,17 @@ def get_lookup():
             extra_rules=[
                 ast.ign("<", "-", ["-", "-", ">"]),
             ],
+        ),
+        ignore_when_not_using_infinite(
+            ast.subst_liga(
+                "---",
+                lookup_name=ast.gly("---", "__ALT__"),
+                desc=">---</",
+                surround=[
+                    (">", [ast.SPC, ast.gly("</")]),
+                    (">", ["<", "/"]),
+                ],
+            )
         ),
         ast.subst_liga(
             "<!--",
