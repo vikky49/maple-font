@@ -19,6 +19,7 @@ from source.py.utils import (
     adjust_line_height,
     check_font_patcher,
     check_directory_hash,
+    patch_instance,
     verify_glyph_width,
     archive_fonts,
     download_cn_base_font,
@@ -30,6 +31,7 @@ from source.py.utils import (
     set_font_name,
     joinPaths,
     merge_ttfonts,
+    default_weight_map
 )
 from source.py.freeze import freeze_feature, get_freeze_config_str, is_enable
 from source.py.feature import (
@@ -39,7 +41,7 @@ from source.py.feature import (
 )
 
 
-FONT_VERSION = "v7.5"
+FONT_VERSION = "v7.6"
 # =========================================================================================
 
 
@@ -311,6 +313,7 @@ class FontConfig:
         self.infinite_arrow = None
         # whether to remove plain text ligatures like `[TODO]`
         self.remove_tag_liga = False
+        self.weight_mapping = default_weight_map
         self.feature_freeze = {
             "cv01": "ignore",
             "cv02": "ignore",
@@ -418,6 +421,7 @@ class FontConfig:
                     "infinite_arrow",
                     "line_height",
                     "github_mirror",
+                    "weight_mapping",
                     "feature_freeze",
                     "nerd_font",
                     "cn",
@@ -1032,6 +1036,12 @@ def update_font_names(
     preferred_family_name: str | None = None,  # NameID 16
     preferred_style_name: str | None = None,  # NameID 17
 ):
+    # Reported in #598
+    # Why: https://github.com/ryanoasis/nerd-fonts/discussions/891#discussioncomment-3471991
+    if len(family_name) > 31:
+        print(
+            f"⚠️ The family name [{family_name}] is too long (> 31) for some old Windows softwares"
+        )
     set_font_name(font, family_name, 1)
     set_font_name(font, style_name, 2)
     set_font_name(font, unique_identifier, 3)
@@ -1608,6 +1618,8 @@ def main(args: list[str] | None = None, version: str | None = None):
             if is_italic:
                 add_ital_axis_to_stat(font)
 
+            patch_instance(font, font_config.weight_mapping)
+
             verify_glyph_width(
                 font=font,
                 expect_widths=font_config.get_valid_glyph_width_list(),
@@ -1733,6 +1745,7 @@ def main(args: list[str] | None = None, version: str | None = None):
         result = {
             "version": FONT_VERSION,
             "family_name": font_config.family_name,
+            "weight_mapping": font_config.weight_mapping,
             "use_hinted": font_config.use_hinted,
             "ligature": font_config.enable_liga,
             "feature_freeze": font_config.feature_freeze,
