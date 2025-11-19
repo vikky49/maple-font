@@ -27,7 +27,7 @@
     "cv09": "ignore",
     "cv10": "ignore",
     "cv11": "ignore",
-    "cv31": "ignore",
+    "cv31": "enable",
     "cv32": "ignore",
     "cv33": "ignore",
     "cv34": "enable",
