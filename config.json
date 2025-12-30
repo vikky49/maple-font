@@ -72,7 +72,7 @@
     "version": "3.4.0",
     "mono": false,
     "propo": false,
-    "use_font_patcher": true,
+    "use_font_patcher": false,
     "glyphs": [
       "--complete"
     ],
