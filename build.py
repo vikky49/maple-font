@@ -1125,6 +1125,9 @@ def build_mono_autohint(f: str, font_config: FontConfig, build_option: BuildOpti
         fea_path=build_option.get_feature_file_path(is_italic),
     )
 
+    # Ensure flags to respect hint info
+    font["head"].flags = font["head"].flags | 1 << 2 | 1 << 3  # type: ignore
+
     param: dict | None = font_config.ttfautohint_param
 
     buf = BytesIO()
@@ -1139,6 +1142,7 @@ def build_mono_autohint(f: str, font_config: FontConfig, build_option: BuildOpti
             build_option.output_ttf, f"{font_config.family_name_compact}-Regular.ttf"
         ),
         "out_file": joinPaths(build_option.output_ttf_hinted, f"{postscript_name}.ttf"),
+        "windows_compatibility": True,
     }
 
     def parse_stem_width_mode(mode: str) -> StemWidthMode:
@@ -1566,7 +1570,7 @@ def build_variable_fonts(font_config: FontConfig, build_option: BuildOption):
 
     run(f"ftcli fix monospace {build_option.output_variable}")
     # run(f"ftcli fix vertical-metrics {build_option.output_variable}")
-    run(f"ftcli name del-mac-names -r {build_option.output_variable}")
+    # run(f"ftcli name del-mac-names -r {build_option.output_variable}")
 
     print("Instantiate TTF")
     run(
@@ -1691,9 +1695,11 @@ def main(args: list[str] | None = None, version: str | None = None):
         return
 
     should_use_cache = parsed_args.cache
-    target_styles = (
-        ["Regular", "Italic"] if parsed_args.least_styles or font_config.debug else None
-    )
+    target_styles = None
+    if parsed_args.least_styles:
+        target_styles = ["Regular", "Bold", "Italic", "BoldItalic"]
+    elif font_config.debug:
+        target_styles = ["Regular", "Italic"]
 
     if not should_use_cache:
         print("🧹 Clean cache...\n")
