@@ -206,7 +206,7 @@ def parse_args(args: list[str] | None = None):
         "--width",
         type=str,
         choices=WIDTH_MAP.keys(),
-        default="default",
+        default=None,
         help="Set glyph width: default (600), narrow (550), slim (500)",
     )
     feature_group.add_argument(
@@ -292,6 +292,11 @@ def parse_args(args: list[str] | None = None):
         "--cn-rebuild",
         action="store_true",
         help="Reinstantiate variable CN base font",
+    )
+    build_group.add_argument(
+        "--cn-wenyuan",
+        action="store_true",
+        help="Use cn-base-static-wenyuan.zip as the CN base font archive",
     )
     build_group.add_argument(
         "--archive",
@@ -401,6 +406,10 @@ class FontConfig:
             "use_static_base_font": True,  # Deprecated. Always `True`
             # scale factor for CN glyphs
             "scale_factor": (1.0, 1.0),
+            # CN static base font archive to download
+            "base_zip_path": "cn-base-static.zip",
+            # Hash used to validate the extracted CN static base fonts
+            "base_hash_path": "source/cn/static.sha256",
         }
         self.glyph_width = 600
         self.glyph_width_cn_narrow = 1000
@@ -492,7 +501,7 @@ class FontConfig:
         if args.remove_tag_liga:
             self.remove_tag_liga = True
 
-        if args.width:
+        if args.width is not None:
             self.width = args.width
 
         if args.line_height is not None:
@@ -529,6 +538,10 @@ class FontConfig:
             self.cn["scale_factor"] = args.cn_scale_factor
         if isinstance(self.cn["scale_factor"], (float, list)):
             self.cn["scale_factor"] = parse_scale_factor(self.cn["scale_factor"])
+
+        if args.cn_wenyuan:
+            self.cn["base_zip_path"] = "cn-base-static-wenyuan.zip"
+            self.cn["base_hash_path"] = "source/cn/static-wenyuan.sha256"
 
     def _apply_build_options(self, args):
         """Apply general build options."""
@@ -793,25 +806,30 @@ class BuildOption:
                 '\nNo `"cn.enable": true` in config.json or `--cn` / `--cn-both` in argv. Skip CN build.'
             )
             return False
-        return self.__ensure_cn_static_fonts(clean_cache=config.cn["clean_cache"])
+        return self.__ensure_cn_static_fonts(
+            clean_cache=config.cn["clean_cache"],
+            zip_path=config.cn["base_zip_path"],
+            hash_path=config.cn["base_hash_path"],
+        )
 
-    def __ensure_cn_static_fonts(self, clean_cache: bool) -> bool:
+    def __ensure_cn_static_fonts(
+        self, clean_cache: bool, zip_path: str, hash_path: str
+    ) -> bool:
         if clean_cache:
             print("Clean CN static fonts")
             shutil.rmtree(self.cn_static_dir, ignore_errors=True)
 
-        if self.__check_cn_exists():
+        if self.__check_cn_exists(hash_path):
             return True
 
         tag = "cn-base"
-        zip_path = "cn-base-static.zip"
         if download_cn_base_font(
             tag=tag,
             zip_path=zip_path,
             target_dir=self.cn_static_dir,
             github_mirror=self.github_mirror,
         ):
-            if self.__check_cn_exists():
+            if self.__check_cn_exists(hash_path):
                 return True
 
             print(
@@ -850,7 +868,7 @@ class BuildOption:
         print("\nCN base fonts don't exist. Skip CN build.")
         return False
 
-    def __check_cn_exists(self) -> bool:
+    def __check_cn_exists(self, hash_path: str) -> bool:
         static_path = self.cn_static_dir
         print(f"\nChecking CN static font directory {static_path}")
         if not path.exists(static_path):
@@ -860,10 +878,10 @@ class BuildOption:
             print("🔎 Exists but not enough font files")
             return False
 
-        if check_directory_hash(static_path):
+        if check_directory_hash(static_path, hash_path):
             print("✅ Hash verified")
             return True
-        print("❌ Hash mismatch, removing directory")
+        print(f"❌ Hash {hash_path} mismatch, removing directory")
         shutil.rmtree(static_path)
         return False
 
@@ -1353,7 +1371,7 @@ def build_cn(f: str, font_config: FontConfig, build_option: BuildOption):
         preferred_style_name=style_in_17,
     )
 
-    cn_font["OS/2"].xAvgCharWidth = 600  # type: ignore
+    cn_font["OS/2"].xAvgCharWidth = font_config.get_target_width()  # type: ignore
 
     # https://github.com/subframe7536/maple-font/issues/188
     # https://github.com/subframe7536/maple-font/issues/313
@@ -1380,7 +1398,7 @@ def build_cn(f: str, font_config: FontConfig, build_option: BuildOption):
         # Change glyph width and keep monospace identifier will cause
         # Intellij IDEA / Windows Notepad and other applications to
         # render the font incorrectly. See details in #249
-        if target_width:
+        if target_width and font_config.get_width_name() != "slim":
             cn_font["post"].isFixedPitch = False  # type: ignore
             cn_font["OS/2"].panose.bProportion = 0  # type: ignore
             cn_font["OS/2"].panose.bSpacing = 0  # type: ignore
